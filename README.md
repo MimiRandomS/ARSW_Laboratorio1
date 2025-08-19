@@ -13,14 +13,24 @@
   Este ejercicio contiene una introducción a la programación con hilos en Java, además de la aplicación a un caso concreto.
   
 
-**Parte I - Introducción a Hilos en Java**
+### **Parte I - Introducción a Hilos en Java**
 
 1. De acuerdo con lo revisado en las lecturas, complete las clases CountThread, para que las mismas definan el ciclo de vida de un hilo que imprima por pantalla los números entre A y B.
+
+Implementacion del codigo
+![code1.png](img%2Fcode1.png)
+
 2. Complete el método __main__ de la clase CountMainThreads para que:
 	1. Cree 3 hilos de tipo CountThread, asignándole al primero el intervalo [0..99], al segundo [99..199], y al tercero [200..299].
 	2. Inicie los tres hilos con 'start()'.
-	3. Ejecute y revise la salida por pantalla. 
+	3. Ejecute y revise la salida por pantalla.
 	4. Cambie el incio con 'start()' por 'run()'. Cómo cambia la salida?, por qué?.
+
+![code2.png](img%2Fcode2.png)
+
+Cuando en la clase `CountThreadsMain` se llama a `run()`, los tres objetos `CountThread` se ejecutan de manera **secuencial en el hilo principal** (`main`), como simples métodos, por lo que la salida se imprime en orden estricto: primero el mensaje `"Primer hilo"`, luego los números del 0 al 99, después el `"Segundo hilo"` seguido de su rango, y así sucesivamente. En cambio, al usar `start()`, cada objeto crea un **hilo independiente** y ejecuta su método `run()` de forma **concurrente**. Esto hace que el hilo principal imprima rápidamente los mensajes `"Primer hilo"`, `"Segundo hilo"` y `"Tercer hilo"`, mientras que los hilos creados comienzan a imprimir sus números en paralelo, produciendo una salida **intercalada y no determinista**, ya que el orden depende del planificador de la JVM y del sistema operativo.
+
+---
 
 **Parte II - Ejercicio Black List Search**
 
