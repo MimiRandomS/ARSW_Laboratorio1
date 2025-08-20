@@ -17,8 +17,12 @@
 
 1. De acuerdo con lo revisado en las lecturas, complete las clases CountThread, para que las mismas definan el ciclo de vida de un hilo que imprima por pantalla los números entre A y B.
 
-Implementacion del codigo
-![code1.png](img%2Fcode1.png)
+#### Implementacion del codigo
+
+<p align="center">
+  <img src="img/code1.png" alt="code1" width="400">
+</p>
+
 
 2. Complete el método __main__ de la clase CountMainThreads para que:
 	1. Cree 3 hilos de tipo CountThread, asignándole al primero el intervalo [0..99], al segundo [99..199], y al tercero [200..299].
@@ -26,7 +30,9 @@ Implementacion del codigo
 	3. Ejecute y revise la salida por pantalla.
 	4. Cambie el incio con 'start()' por 'run()'. Cómo cambia la salida?, por qué?.
 
-![code2.png](img%2Fcode2.png)
+<p align="center">
+  <img src="img/code2.png" alt="code2" width="400">
+</p>
 
 Cuando en la clase `CountThreadsMain` se llama a `run()`, los tres objetos `CountThread` se ejecutan de manera **secuencial en el hilo principal** (`main`), como simples métodos, por lo que la salida se imprime en orden estricto: primero el mensaje `"Primer hilo"`, luego los números del 0 al 99, después el `"Segundo hilo"` seguido de su rango, y así sucesivamente. En cambio, al usar `start()`, cada objeto crea un **hilo independiente** y ejecuta su método `run()` de forma **concurrente**. Esto hace que el hilo principal imprima rápidamente los mensajes `"Primer hilo"`, `"Segundo hilo"` y `"Tercer hilo"`, mientras que los hilos creados comienzan a imprimir sus números en paralelo, produciendo una salida **intercalada y no determinista**, ya que el orden depende del planificador de la JVM y del sistema operativo.
 
@@ -60,16 +66,44 @@ Para 'refactorizar' este código, y hacer que explote la capacidad multi-núcleo
 
 1. Cree una clase de tipo Thread que represente el ciclo de vida de un hilo que haga la búsqueda de un segmento del conjunto de servidores disponibles. Agregue a dicha clase un método que permita 'preguntarle' a las instancias del mismo (los hilos) cuantas ocurrencias de servidores maliciosos ha encontrado o encontró.
 
+#### Creación de la clase tipo Thread esta fue llamda `worker`
+
+<p align="center">
+  <img src="img/code3.png" alt="code3" width="600">
+</p>
+
 2. Agregue al método 'checkHost' un parámetro entero N, correspondiente al número de hilos entre los que se va a realizar la búsqueda (recuerde tener en cuenta si N es par o impar!). Modifique el código de este método para que divida el espacio de búsqueda entre las N partes indicadas, y paralelice la búsqueda a través de N hilos. Haga que dicha función espere hasta que los N hilos terminen de resolver su respectivo sub-problema, agregue las ocurrencias encontradas por cada hilo a la lista que retorna el método, y entonces calcule (sumando el total de ocurrencuas encontradas por cada hilo) si el número de ocurrencias es mayor o igual a _BLACK_LIST_ALARM_COUNT_. Si se da este caso, al final se DEBE reportar el host como confiable o no confiable, y mostrar el listado con los números de las listas negras respectivas. Para lograr este comportamiento de 'espera' revise el método [join](https://docs.oracle.com/javase/tutorial/essential/concurrency/join.html) del API de concurrencia de Java. Tenga también en cuenta:
 
 	* Dentro del método checkHost Se debe mantener el LOG que informa, antes de retornar el resultado, el número de listas negras revisadas VS. el número de listas negras total (línea 60). Se debe garantizar que dicha información sea verídica bajo el nuevo esquema de procesamiento en paralelo planteado.
 
-	* Se sabe que el HOST 202.24.34.55 está reportado en listas negras de una forma más dispersa, y que el host 212.24.24.55 NO está en ninguna lista negra.
+	* Se sabe que el HOST 202.24.34.55 está reportado en listas negras de una forma más dispersa, y que el host 212.24.24.55 NO está en ninguna lista negra.}
+#### Mpdificación de la clase `checkHost`
+<p align="center">
+  <img src="img/code4.png" alt="code3" width="700">
+</p>
 
+#### Pruebas de IP'S
+Prueba para la ip `202.24.34.55`
+<p align="center">
+  <img src="img/ip1.png" alt="ip1" width="600">
+</p>
+
+Prueba para la ip `212.24.24.55`
+<p align="center">
+  <img src="img/ip2.png" alt="ip2" width="600">
+</p>
+
+---
 
 **Parte II.I Para discutir la próxima clase (NO para implementar aún)**
 
 La estrategia de paralelismo antes implementada es ineficiente en ciertos casos, pues la búsqueda se sigue realizando aún cuando los N hilos (en su conjunto) ya hayan encontrado el número mínimo de ocurrencias requeridas para reportar al servidor como malicioso. Cómo se podría modificar la implementación para minimizar el número de consultas en estos casos?, qué elemento nuevo traería esto al problema?
+
+#### Respuesta:
+La mejora consiste en que los hilos dejen de buscar tan pronto el sistema detecte que ya se alcanzó el número mínimo de ocurrencias requeridas. Para lograrlo, se puede usar una variable compartida que actúe como bandera global: cuando un hilo alcanza el umbral, actualiza esa bandera y los demás hilos, al revisarla en su ciclo, se detienen sin seguir consultando listas innecesarias. Esto introduce al problema la necesidad de **sincronización y coordinación entre hilos**, no solo de paralelismo simple.
+
+
+---
 
 **Parte III - Evaluación de Desempeño**
 
@@ -84,6 +118,8 @@ A partir de lo anterior, implemente la siguiente secuencia de experimentos para 
 Al iniciar el programa ejecute el monitor jVisualVM, y a medida que corran las pruebas, revise y anote el consumo de CPU y de memoria en cada caso. ![](img/jvisualvm.png)
 
 Con lo anterior, y con los tiempos de ejecución dados, haga una gráfica de tiempo de solución vs. número de hilos. Analice y plantee hipótesis con su compañero para las siguientes preguntas (puede tener en cuenta lo reportado por jVisualVM):
+
+---
 
 **Parte IV - Ejercicio Black List Search**
 
