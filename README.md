@@ -1,8 +1,14 @@
 
-### Escuela Colombiana de Ingeniería
-### Arquitecturas de Software - ARSW
-## Ejercicio Introducción al paralelismo - Hilos - Caso BlackListSearch
+### ARSW - Arquitecturas de Software | Escuela Colombiana de Ingeniería
+### Laboratorio No.1 | Introducción al paralelismo - Hilos - Caso BlackListSearch
 
+
+___
+
+
+**Integrantes (Grupo 1)**
+  - Sergio Andrey Silva Rodríguez
+  - Gerónimo Martínez Núñez
 
 ### Dependencias:
 ####   Lecturas:
@@ -194,13 +200,78 @@ ___
 
 **Parte IV - Ejercicio Black List Search**
 
-1. Según la [ley de Amdahls](https://www.pugetsystems.com/labs/articles/Estimating-CPU-Performance-using-Amdahls-Law-619/#WhatisAmdahlsLaw?):
+**1. Según la [ley de Amdahls](https://www.pugetsystems.com/labs/articles/Estimating-CPU-Performance-using-Amdahls-Law-619/#WhatisAmdahlsLaw?):**
 
-	![](img/ahmdahls.png), donde _S(n)_ es el mejoramiento teórico del desempeño, _P_ la fracción paralelizable del algoritmo, y _n_ el número de hilos, a mayor _n_, mayor debería ser dicha mejora. Por qué el mejor desempeño no se logra con los 500 hilos?, cómo se compara este desempeño cuando se usan 200?. 
+$$
+S(n) = \frac{1}{(1-P) + \frac{P}{n}}
+$$
 
-2. Cómo se comporta la solución usando tantos hilos de procesamiento como núcleos comparado con el resultado de usar el doble de éste?.
 
-3. De acuerdo con lo anterior, si para este problema en lugar de 100 hilos en una sola CPU se pudiera usar 1 hilo en cada una de 100 máquinas hipotéticas, la ley de Amdahls se aplicaría mejor?. Si en lugar de esto se usaran c hilos en 100/c máquinas distribuidas (siendo c es el número de núcleos de dichas máquinas), se mejoraría?. Explique su respuesta.
+**Donde $S(n)$ es el mejoramiento teórico del desempeño, $P$ la fracción paralelizable del algoritmo, y $n$ el número de hilos, a mayor $n$, mayor debería ser dicha mejora. Por qué el mejor desempeño no se logra con los _500_ hilos?, cómo se compara este desempeño cuando se usan _200_?** 
 
+**Análisis**
+
+$P$ es la fracción paralelizable del algoritmo, es decir que es un porcentaje:
+
+$$
+0 \leq P \leq 1
+$$
+
+Cuando aumentamos el numero de hilos, cada vez más y más. La expresión se acerca a un valor. Matemáticamente:
+
+$$
+\lim_{n \to \infty} S(n) = \frac{1}{1-P}
+$$
+
+Llega un punto en el que _200_ hilos, hacen practicamente el mismo efecto en desempeño que si se usara _500_ o más hilos. La diferencia es mínima. Ya que $S(n)$ se aproxima a $\frac{1}{1-P}$
+
+
+**Ejemplo**
+![](img/part4_1.png)
+
+Donde $S(n)$ es la línea Roja y $P = 50\%$. Se analiza que la mayor diferencia ocurre en aumentar hilos en cantidades pequeñas.
+
+**2. Cómo se comporta la solución usando tantos hilos de procesamiento como núcleos comparado con el resultado de usar el doble de éste?**
+
+Suponiendo $P = 98\%$, $S(n)$ se convierte casi en $n$. Teoricamente, el rendimiento (al duplicar los hilos) también se duplica.
+
+En la práctica:
+
+- $T_1 = 16s$ (4 Hilos)
+- $T_2 = 3s$ (8 Hilos)
+
+El rendimiento, es más grande que solo duplicarse. Hablando en numeros, aumentó en un $81\%$. Un rendimiento **_5.3_ veces mejor**.
+
+**Nota:** Puede que usando otros modelos de _CPU_ varié mucho mejor o peor.
+
+
+**3.1 De acuerdo con lo anterior, si para este problema en lugar de _100_ hilos en una sola _CPU_ se pudiera usar _1_ hilo en cada una de _100_ máquinas hipotéticas, la _ley de Amdahls_ se aplicaría mejor?**
+
+**Hipótesis:** Uno pensaría que, si se distribuye el algoritmo en _100_ máquinas, al estas tener disponibilidad total del hardware
+en la ejecución de cada tarea que se les asigne, se harían los cálculos más rápido, pero también toca tener en cuenta la
+interconexión de estas máquinas para sincronizarse y ponerse de acuerdo (que de hecho sería vía red privada que tiene 
+sus propias latencias a diferencia en _1_ sola máquina que las latencias serían a nivel de hardware y arquitectura).
+
+
+
+**3.2 Si en lugar de esto se usaran $c$ hilos en $100/c$ máquinas distribuidas (siendo $c$ es el número de núcleos de dichas máquinas), se mejoraría?. Explique su respuesta**
+
+
+
+**Datos:** Suponiendo $c = 4$ (Escenario promedio). Cantidad de máquinas es $\frac{100}{4}$, es decir $25$ máquinas.
+
+
+- Cada núcleo va a tener un hilo dedicado, eliminando una sobrecarga o sobreprocesamiento que sucede cuando el número de hilo
+es mayor al número de núcleos físicos.
+
+- Analizando con la _Ley de Amdahl_, sigue siendo influido el rendimiento por la fracción paralelizable $P$ aunque se distribuya
+el trabajo en más máquinas.
+
+- Al hacer esto en múltiples máquinas, esto introduce latencias de red y sincronización entre las máquinas (Algo que no
+existe en $1$ sola máquina a nivel de $1$ sola _CPU_)
+
+En conclusión, si es posible mejorar el rendimiento al repartir los calculos a varias máquinas, pero la mejora no sería
+proporcional al número de máquinas. Esto ocurre puesto que las máquinas necesitan sincronizarse y ponerse de acuerdo para
+tener un orden y no dar resultados incorrectos, algo que hace consumir tiempo y recursos y reduce la ganancia total.
 
 
