@@ -103,23 +103,94 @@ La estrategia de paralelismo antes implementada es ineficiente en ciertos casos,
 La mejora consiste en que los hilos dejen de buscar tan pronto el sistema detecte que ya se alcanzó el número mínimo de ocurrencias requeridas. Para lograrlo, se puede usar una variable compartida que actúe como bandera global: cuando un hilo alcanza el umbral, actualiza esa bandera y los demás hilos, al revisarla en su ciclo, se detienen sin seguir consultando listas innecesarias. Esto introduce al problema la necesidad de **sincronización y coordinación entre hilos**, no solo de paralelismo simple.
 
 
----
+
+___
+
 
 **Parte III - Evaluación de Desempeño**
 
 A partir de lo anterior, implemente la siguiente secuencia de experimentos para realizar las validación de direcciones IP dispersas (por ejemplo 202.24.34.55), tomando los tiempos de ejecución de los mismos (asegúrese de hacerlos en la misma máquina):
 
-1. Un solo hilo.
-2. Tantos hilos como núcleos de procesamiento (haga que el programa determine esto haciendo uso del [API Runtime](https://docs.oracle.com/javase/7/docs/api/java/lang/Runtime.html)).
-3. Tantos hilos como el doble de núcleos de procesamiento.
-4. 50 hilos.
-5. 100 hilos.
+Al iniciar el programa ejecute el monitor jVisualVM, y a medida que corran las pruebas, revise y anote el consumo de CPU y de memoria en cada caso.
 
-Al iniciar el programa ejecute el monitor jVisualVM, y a medida que corran las pruebas, revise y anote el consumo de CPU y de memoria en cada caso. ![](img/jvisualvm.png)
-
-Con lo anterior, y con los tiempos de ejecución dados, haga una gráfica de tiempo de solución vs. número de hilos. Analice y plantee hipótesis con su compañero para las siguientes preguntas (puede tener en cuenta lo reportado por jVisualVM):
 
 ---
+
+**Computador**
+El computador en el que se ejecuto tiene
+
+- **CPU:** Intel(R) Core(TM) i3-2310M 2.10GHz
+- **Núcleos:** 2
+- **Hilos:** 2 por cada núcleo (4 en total)
+
+**1. Un solo hilo**
+
+**Tiempo de ejecución:** 1m 33s (93 segundos)
+![](img/part3_1.png)
+
+
+---
+
+**2. Tantos hilos como núcleos de procesamiento (haga que el programa determine esto haciendo uso del [API Runtime](https://docs.oracle.com/javase/7/docs/api/java/lang/Runtime.html)).**
+
+
+
+Para calcular los núcleos de procesamiento (De la máquina) con _Runtime_
+
+```java
+int processors = Runtime.getRuntime().availableProcessors();
+```
+
+**Tiempo de ejecución:** 16 segundos
+![](img/part3_2.png)
+
+---
+
+**3. Tantos hilos como el doble de núcleos de procesamiento**
+
+**Tiempo de ejecución:** 3 segundos
+
+Aunque el gráfico muestre 6s, es 3 segundos. En el codigo se hace una pausa de 3s en el codigo para que alcance agarrar el *VisualVM* y poder sacar el screenshot puesto que sin esto pasa muy rápido.
+```java
+Thread.sleep(3000);
+```
+
+
+![](img/part3_3.png)
+
+---
+
+**4. 50 hilos: 3 segundos**
+
+![](img/part3_4.png)
+
+
+---
+
+**5. 100 hilos: 2 segundos**
+![](img/part3_5.png)
+
+
+
+
+
+---
+
+- **Con lo anterior, y con los tiempos de ejecución dados, haga una gráfica de tiempo de solución vs. número de hilos. Analice y plantee hipótesis con su compañero para las siguientes preguntas (puede tener en cuenta lo reportado por jVisualVM):**
+
+
+| # Threads | Time (min:s)   | Time (seconds)    |
+|-----------|----------------|-------------------|
+| 1         | 1m 33s         | 93                |
+| 4         | 0m 16s         | 16                |
+| 8         | 0m 3s          | 3                 |
+| 50        | 0m 3s          | 3                 |
+| 100       | 0m 2s          | 2                 |
+
+
+![](img/part3_graphic.png)
+
+___
 
 **Parte IV - Ejercicio Black List Search**
 
