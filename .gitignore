@@ -1,6 +1,29 @@
-target
+# IDEs
+.idea/
+nbproject/
+*.iml
+.vscode/
+
+# Compilados de Java
+target/
+bin/
+out/
+*.class
+
+# Archivos de sistema
 .DS_Store
+Thumbs.db
 
-.idea
+# Logs y temporales
+*.log
+*.tmp
+*.swp
+*.bak
 
-nbproject
+# Dependencias (si usas gradle o mvn wrapper)
+.gradle/
+build/
+.mvn/wrapper/maven-wrapper.jar
+
+# Archivos de entorno (no deberían ir al repo)
+*.env
